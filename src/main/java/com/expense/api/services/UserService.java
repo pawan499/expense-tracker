@@ -1,17 +1,22 @@
 package com.expense.api.services;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.expense.api.dtos.userdto.UserDto;
 import com.expense.api.dtos.userdto.UserRegisterRequestDto;
 import com.expense.api.entities.User;
+import com.expense.api.exceptions.UnauthenticatedUserException;
 import com.expense.api.repositories.UserRepository;
 
 @Service
 public class UserService {
+
     @Autowired
     private UserRepository userRepository;
+
     public UserDto createUser(UserRegisterRequestDto user){
             Optional<User> existingUser=userRepository.findByEmail(user.getEmail());
             if(existingUser.isPresent()){
@@ -31,4 +36,12 @@ public class UserService {
             return userDto;
     }
 
+    public User getCurrentAuthenticatedUser(){
+        Authentication auth=SecurityContextHolder.getContext().getAuthentication();
+        if(auth==null || !auth.isAuthenticated()){
+            throw new UnauthenticatedUserException();
+        }
+        String username=auth.getName();
+        return userRepository.findByEmail(username).orElseThrow(()->new UnauthenticatedUserException());
+    }
 }

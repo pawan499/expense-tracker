@@ -17,11 +17,11 @@ public class ExpenseRequestDto {
 
     @NotNull(message="Amount is required")
     @Min(value =1,message = "Amount shoul be greate than 0")
-    private double amount;
+    private Double amount;
 
     
     @NotNull(message = "Expense type is required")
-    private ExpenseType expenseType;
+    private ExpenseType type;
 
     @NotNull(message = "Description is required")
     private String description;
